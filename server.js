@@ -1,6 +1,8 @@
 const express = require('express');
 const path = require('path');
-const uuid = require('uuid');
+const { v4: uuidv4 } = require('uuid');
+const fs = require('fs');
+// const { saveNote } = require('./public/assets/js/index.js')
 
 const PORT = process.env.PORT || 3001;
 
@@ -24,30 +26,24 @@ app.get('*', (req, res) => {
 //API POST Route
 app.post('/api/notes', (req, res) => {
     const newNote = req.body;
-    // save the new note to your database or data store
-    res.json(newNote);
-  });
+  newNote.id = uuidv4();
+  const notes = JSON.parse(fs.readFileSync('./db/db.json'));
+  notes.push(newNote);
+  fs.writeFileSync('./db/db.json', JSON.stringify(notes));
+  res.json(newNote);
+});
 
 //API GET Route
-app.get('/', (req, res) => {
-    readFromFile('./db/db.json').then((data) => res.json(JSON.parse(data)));
-  });
-//   app.get('/notes', (req, res) => {
-//     res.json(notes);
-//   });
-
-//   let notes = [];
-
-//   app.post('/notes', (req, res) => {
-//     const note = {
-//         id: uuid.v4(),
-//         title: req.body.title,
-//         text: req.body.content
-//     }
-
-//     notes.push(note);
-//     res.status(201).json(note);
-//   })
+app.get('/api/notes', (req, res) => {
+    fs.readFile('./db/db.json', 'utf8', (err, data) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).send('Error reading notes');
+        }
+        res.json(JSON.parse(data));
+        console.log(res.json)
+      });
+    });
 
 // listen() method is responsible for listening for incoming connections on the specified port 
 app.listen(PORT, () =>

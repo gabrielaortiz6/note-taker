@@ -8,21 +8,28 @@ const {
 
 //API GET Route
 router.get('/', (req, res) => {
-  readFromFile('./db/db.json').then((data) => res.json(JSON.parse(data)));
+  readFromFile('./db/db.json', 'utf8', (err, data) => {
+    if (err) {
+      console.log(err);
+      res.status(500).send('Error reading database');
+    } else {
+      res.json(JSON.parse(data));
+    }
+  });
 });
 
 //POST Route
 router.post('/', (req, res) => {
     const newNote = req.body;
     // newNote.id = uuidv4();
-    fs.readFile('./db/db.json', (err,data) => {
+    readFromFile('./db/db.json', (err,data) => {
         if (err) {
         console.log(err);
         res.status(500).send("Error reading database")
     } else { 
         const notes = JSON.parse(data);
         notes.push(newNote);
-        fs.writeFile("./db/db.json", JSON.stringify(notes), (err) => {
+        writeToFile("./db/db.json", JSON.stringify(notes), (err) => {
             if (err) {
               console.log(err);
               res.status(500).send("Error writing to database");

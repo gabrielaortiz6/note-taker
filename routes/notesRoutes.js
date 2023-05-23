@@ -23,7 +23,7 @@ router.post('/', (req, res) => {
   const { title, text } = req.body
   if (req.body) {
     const newNote = { title, text, note_id:uuidv4() }
-    readAndAppend('./db/db.json', (err,data) => {
+    readAndAppend(newNote, './db/db.json', (err,data) => {
         if (err) {
         console.log(err);
         res.status(500).send("Error reading database")

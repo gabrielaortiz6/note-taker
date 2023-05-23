@@ -8,7 +8,7 @@ const {
 
 //API GET Route
 router.get('/', (req, res) => {
-  readFromFile('./db/db.json', 'utf8', (err, data) => {
+  readFromFile('./db/db.json', (err, data) => {
     if (err) {
       console.log(err);
       res.status(500).send('Error reading database');
@@ -20,9 +20,10 @@ router.get('/', (req, res) => {
 
 //POST Route
 router.post('/', (req, res) => {
-    const newNote = req.body;
-    // newNote.id = uuidv4();
-    readFromFile('./db/db.json', (err,data) => {
+  const { title, text } = req.body
+  if (req.body) {
+    const newNote = { title, text, note_id:uuidv4() }
+    readAndAppend('./db/db.json', (err,data) => {
         if (err) {
         console.log(err);
         res.status(500).send("Error reading database")
@@ -39,6 +40,9 @@ router.post('/', (req, res) => {
           });
         }
       });
-    });
+    } else {
+      res.status(400).send('Bad Request');
+    }
+  });
 
     module.exports = router;

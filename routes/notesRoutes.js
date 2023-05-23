@@ -8,7 +8,7 @@ const {
 
 //API GET Route
 router.get('/', (req, res) => {
-  readFromFile('./db/db.json', (err, data) => {
+  readFromFile('./db/db.json', 'utf8', (err, data) => {
     if (err) {
       console.log(err);
       res.status(500).send('Error reading database');
